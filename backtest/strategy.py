@@ -18,7 +18,7 @@ from plot import plot_close_price, plot_short, plot_MACD, plot_volatility_stop_l
 # Use BTC-Daily.csv file
 
 def import_data():
-    data = pd.read_csv('data/Bitcoin.csv')
+    data = pd.read_csv('../data/Bitcoin.csv')
     data['Date'] = pd.to_datetime(data['Date'])
     data['Price'] = data['Price'].str.replace(',', '')
     data = data[(data['Date'].dt.year > 2014)].reset_index(drop=True)
