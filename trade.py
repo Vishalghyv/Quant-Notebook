@@ -6,6 +6,7 @@ class Trade:
         self.current_price = price
         self.quantity = quantity
         self.profit = []
+        self.cummulitive_profit = []
         self.profit_fee_adjusted = []
         self.fee_trade = 0.001
         self.status = 'close'
@@ -18,11 +19,14 @@ class Trade:
     def calculate_profit(self):
         # Calculate the profit based on the side of the trade and quantity  
         current_profit = 0
+        if self.current_price <= self.target_price:
+            print('Target hit')
         if self.side == 'long':
-            current_profit = (self.price - self.target_price) * self.quantity
+            current_profit = (self.current_price - self.price) * self.quantity
         elif self.side == 'short':
-            current_profit = (self.stop_loss_price - self.price) * self.quantity
+            current_profit = (self.price - self.current_price) * self.quantity
         self.profit.append(current_profit)
+        self.cummulitive_profit.append(sum(self.profit))
         self.profit_fee_adjusted.append(current_profit - (self.fee_trade * self.quantity * self.price))
     
     def close(self):

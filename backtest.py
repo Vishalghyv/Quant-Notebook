@@ -9,13 +9,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# Import data
-def import_data():
-    data = pd.read_csv('data/Crypto/Binance_BTCUSDT_d.csv')
-    return data
-
-data = import_data()
-
 # Import sigals from strategy.py
 from strategy import final_signals
 print(len(final_signals))
@@ -26,8 +19,8 @@ print("\n\nBacktesting the strategy\n\n")
 # Backtest the strategy
 quantity = 1
 symbol = 'BTCUSDT'
-initalPrice = data['Close'][0]
-target_multiplier = 1
+initalPrice = final_signals['Close'].iloc[0]
+target_multiplier = 2
 
 bot = Trade(1, symbol, initalPrice, quantity)
 
@@ -39,17 +32,21 @@ for row in final_signals.iterrows():
     target_price = price - final_signals['atr'][i] * target_multiplier
     stop_price = price + final_signals['atr'][i]
     bot.update(price)
-    if signal == 1:
-        bot.close()
-    elif signal == -1:
+    if signal == -1:
         bot.short(quantity, price, target_price, stop_price)
-        # bot.log()
 
     # except:
     #     pass
 print(bot.profit)
 
 # Plot the results
+plt.plot(bot.cummulitive_profit)
+
 plt.plot(bot.profit)
-plt.plot(bot.profit_fee_adjusted)
+# Add labels
+plt.title('Backtest Results')
+plt.xlabel('Trade Index')
+plt.ylabel('Profit')
+# Add legend
+plt.legend(['Cummulitive Profit', 'Profit'])
 plt.show()

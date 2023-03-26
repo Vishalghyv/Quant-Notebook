@@ -11,23 +11,27 @@ import numpy as np
 import pandas as pd
 pd.options.mode.chained_assignment = None 
 import matplotlib.pyplot as plt
-from plot import plot_close_price, plot_MACD, plot_volatility_stop_loss
+from plot import plot_close_price, plot_short, plot_MACD, plot_volatility_stop_loss
 
 # Step 2: Import the data
 # https://www.kaggle.com/datasets/prasoonkottarathil/btcinusd
 # Use BTC-Daily.csv file
 
 def import_data():
-    data = pd.read_csv('data/Crypto/Binance_BTCUSDT_d.csv')
+    data = pd.read_csv('data/Bitcoin.csv')
+    data['Date'] = pd.to_datetime(data['Date'])
+    data['Price'] = data['Price'].str.replace(',', '')
+    data = data[(data['Date'].dt.year > 2014)].reset_index(drop=True)
+
+    data['Close'] = data['Price'].astype(float)
+    data['High'] = data['High'].str.replace(',', '')
+    data['High'] = data['High'].astype(float)
+    data['Low'] = data['Low'].str.replace(',', '')
+    data['Low'] = data['Low'].astype(float)
+    data['Open'] = data['Open'].str.replace(',', '')
+    data['Open'] = data['Open'].astype(float)
     return data
 data = import_data()
-
-# plot_close_price(data)
-
-# Reverse each column
-data = data.iloc[::-1]
-data = data.reset_index(drop=True)
-print(data.head(1))
 
 # Step 4: Calculate the MACD (Moving Average Convergence Divergence) indicator
 def MACD(data, fast_period, slow_period, signal_period, column):
@@ -59,7 +63,7 @@ def generate_short_signals(data):
 data = generate_short_signals(data)
 
 
-# plot_short(data)
+plot_short(data)
 
 def volatility_stop_loss(data, multiplier):
     # Calculate the average true range
@@ -73,11 +77,11 @@ def volatility_stop_loss(data, multiplier):
     return data
 
 
+# print(len(data))
 
-
-new_data = data[-200:]
+new_data = data[-2000:]
 new_data = volatility_stop_loss(new_data, 2)
 # plot_volatility_stop_loss(new_data)
-new_data = new_data[-100:]
+new_data = new_data[-1900:]
 
 final_signals = new_data[['Close', 'short', 'stop_loss', 'atr']]
