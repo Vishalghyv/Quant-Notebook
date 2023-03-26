@@ -2,4 +2,3 @@
 # Git ignore file for python projects
 __pycache__/*
 .ipynb_checkpoints/*
-data/*
